@@ -8,7 +8,9 @@ import static org.junit.Assert.assertThat;
 
 import java.util.List;
 
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
@@ -22,6 +24,7 @@ import com.github.springtestdbunit.DbUnitTestExecutionListener;
 
 import gov.uk.ho.ibm.IbmHoAccountServiceApplication;
 import gov.uk.ho.ibm.dao.AccountRepository;
+import gov.uk.ho.ibm.exception.AccountServiceException;
 import gov.uk.ho.ibm.model.Account;
 
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -36,6 +39,8 @@ public class AccountServiceIT {
 	private AccountService accountService;
 	@Autowired
 	private  AccountRepository accountRepository;
+	 @Rule
+     public ExpectedException excpetion= ExpectedException.none();
 	
 	
 
@@ -68,6 +73,19 @@ public class AccountServiceIT {
 		assertFalse(accountRepository.existsById(savedAccount.getId()));
 	}
 	
+	
+	@Test
+	public void deleteAccount_should_throw_excpetion_when_account_id_not_exits()
+	{
+		//arrange
+		excpetion.expect(AccountServiceException.class);
+    	 excpetion.expectMessage("account id "+20L+ " does not exists");
+	
+		//act
+		accountService.deleteAccount(20L);
+		
+		
+	}
 	@Test
 	public void getAccounts_should_get_all_accounts()
 	{
